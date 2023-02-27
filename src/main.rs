@@ -21,14 +21,14 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use uuid::Uuid;
 
 const PDF_DATA_JSON: &str = "./data.json";
-type Db = Arc<RwLock<HashMap<usize, PdfDetail>>>;
+type Db = Arc<RwLock<Vec<PdfDetail>>>;
 
 #[tokio::main]
 async fn main() {
     // pdfの読み込み
     let pdf_data = read_json_file(PDF_DATA_JSON).unwrap();
 
-    // ハッシュマップを作成
+    // データベースとなるベクタを作成
     let db = make_db(&pdf_data);
 
     // app
@@ -72,13 +72,7 @@ fn read_json_file(file_path: &str) -> std::io::Result<PdfDetailData> {
 /// ## make_db
 /// Jsonからデータベースを作成
 fn make_db(data: &PdfDetailData) -> Db {
-    // let mut map: HashMap<Uuid, PdfDetail> = HashMap::new();
-    let mut map: HashMap<usize, PdfDetail> = HashMap::new();
-
-    for (i, detail) in data.pdf_detail.iter().enumerate() {
-        map.insert(i, detail.clone());
-    }
-
+    let map: Vec<PdfDetail> = data.pdf_detail.clone();
     Arc::new(RwLock::new(map))
 }
 
@@ -91,7 +85,7 @@ async fn get_detail(
     let detail = db
         .read()
         .unwrap()
-        .get(&id)
+        .get(id)
         .cloned()
         .ok_or(StatusCode::NOT_FOUND)?;
 
