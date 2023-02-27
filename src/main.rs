@@ -1,6 +1,5 @@
 use axum::{
-    error_handling::HandleErrorLayer,
-    extract::{Path, Query, State},
+    extract::{Path, State},
     http::StatusCode,
     response::IntoResponse,
     routing::get,
@@ -10,15 +9,9 @@ use serde::{Deserialize, Serialize};
 use std::fs::OpenOptions;
 use std::io::BufReader;
 use std::{
-    collections::HashMap,
     net::SocketAddr,
     sync::{Arc, RwLock},
-    time::Duration,
 };
-use tower::{BoxError, ServiceBuilder};
-use tower_http::trace::TraceLayer;
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-use uuid::Uuid;
 
 const PDF_DATA_JSON: &str = "./data.json";
 type Db = Arc<RwLock<Vec<PdfDetail>>>;

@@ -7,15 +7,9 @@ publish = false
 [lib]
 
 [dependencies]
-shuttle-service = { version = "0.10.0", features = ["web-axum"] }
-axum = "0.6.8"
-sync_wrapper = "0.1.2"
-serde = { version = "1.0", features = ["derive"] }
+axum = "0.6.9"
+serde = "1.0.152"
 serde_json = "1.0.93"
-tokio = { version = "1.0", features = ["full"] }
-tower = { version = "0.4", features = ["util", "timeout"] }
-tower-http = { version = "0.4.0", features = ["add-extension", "trace"] }
-tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-uuid = { version = "1.0", features = ["serde", "v4"] }
-
+shuttle-service = { version = "0.10.0", features = ["web-axum"] }
+sync_wrapper = "0.1.2"
+tokio = { version = "^1.22.0", features = ["macros"] }
