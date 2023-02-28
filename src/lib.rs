@@ -12,7 +12,7 @@ use std::{
     sync::{Arc, RwLock},
 };
 
-const PDF_DATA_JSON: &str = "./data.json";
+const PDF_DATA_JSON: &str = "static/data.json";
 type Db = Arc<RwLock<Vec<PdfDetail>>>;
 
 #[shuttle_service::main]
