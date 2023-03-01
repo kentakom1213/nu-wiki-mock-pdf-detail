@@ -12,9 +12,7 @@ https://nu-wiki-mock-pdf-detail.shuttleapp.rs
 
 - `/list`：pdfのリストを返します
 
-<detail><summary>例</summary>
-<div>
-
+例
 ```
 $ curl https://nu-wiki-mock-pdf-detail.shuttleapp.rs/list
 [
@@ -41,15 +39,11 @@ $ curl https://nu-wiki-mock-pdf-detail.shuttleapp.rs/list
 ]
 ```
 
-</div>
-
 ### pdf詳細
 
 - `/detail/:file_id`：与えられたidを持つpdfファイルの詳細情報を返します
 
-<detail><summary>例</summary>
-<div>
-
+例
 ```
 $ curl https://nu-wiki-mock-pdf-detail.shuttleapp.rs/detail/0
 [
@@ -75,5 +69,3 @@ $ curl https://nu-wiki-mock-pdf-detail.shuttleapp.rs/detail/0
   }
 ]
 ```
-
-</div>
