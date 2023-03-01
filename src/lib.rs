@@ -5,6 +5,7 @@ use axum::{
     routing::get,
     Json, Router,
 };
+use pdf_list::PdfList;
 use std::sync::{Arc, RwLock};
 
 // データの読み込み
@@ -14,7 +15,9 @@ mod pdf_detail;
 use crate::pdf_detail::{read_detail_data, PdfDetail, PdfDetailData};
 mod pdf_list;
 
-type Db = Arc<RwLock<Vec<PdfDetail>>>;
+// dbの定義
+type DbPdfList = Arc<RwLock<Vec<PdfList>>>;
+type DbPdfDetail = Arc<RwLock<Vec<PdfDetail>>>;
 
 #[shuttle_service::main]
 async fn axum() -> shuttle_service::ShuttleAxum {
@@ -36,7 +39,7 @@ async fn axum() -> shuttle_service::ShuttleAxum {
 
 /// ## make_db
 /// Jsonからデータベースを作成
-fn make_db(data: &PdfDetailData) -> Db {
+fn make_db(data: &PdfDetailData) -> DbPdfDetail {
     let map: Vec<PdfDetail> = data.pdf_detail.clone();
     Arc::new(RwLock::new(map))
 }
@@ -45,7 +48,7 @@ fn make_db(data: &PdfDetailData) -> Db {
 /// 指定されたIDがデータにあった場合、詳細情報を返す
 async fn get_detail(
     Path(id): Path<usize>,
-    State(db): State<Db>,
+    State(db): State<DbPdfDetail>,
 ) -> Result<impl IntoResponse, StatusCode> {
     let detail = db
         .read()
