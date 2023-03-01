@@ -5,18 +5,21 @@ use axum::{
     routing::get,
     Json, Router,
 };
-use pdf_list::{PdfList, read_list_data};
-use std::{sync::{Arc, RwLock}};
+use std::{
+    ops::Deref,
+    sync::{Arc, RwLock},
+};
 
 // データの読み込み
 mod data;
 use crate::data::{PDF_DETAIL_DATA, PDF_LIST_DATA};
+mod pdf_list;
+use pdf_list::{read_list_data, PdfOverview};
 mod pdf_detail;
 use crate::pdf_detail::{read_detail_data, PdfDetail};
-mod pdf_list;
 
 // dbの定義
-type DbPdfList = Arc<RwLock<Box<PdfList>>>;
+type DbPdfList = Arc<RwLock<Vec<PdfOverview>>>;
 type DbPdfDetail = Arc<RwLock<Vec<PdfDetail>>>;
 
 #[shuttle_service::main]
@@ -26,8 +29,8 @@ async fn axum() -> shuttle_service::ShuttleAxum {
     let pdf_detail = read_detail_data(PDF_DETAIL_DATA).unwrap();
 
     // データベースとなるベクタを作成
-    let db_list = Arc::new( RwLock::new( Box::new( pdf_list ) ) );
-    let db_detail = Arc::new( RwLock::new( pdf_detail.data ) );
+    let db_list = Arc::new(RwLock::new(pdf_list.data));
+    let db_detail = Arc::new(RwLock::new(pdf_detail.data));
 
     // app
     let app = Router::new()
@@ -43,14 +46,8 @@ async fn axum() -> shuttle_service::ShuttleAxum {
 
 /// ## get_list
 /// pdfの一覧を返す
-async fn get_list(
-    State(db): State<DbPdfList>
-) -> Result<impl IntoResponse, StatusCode> {
-    let list = db
-            .read()
-            .unwrap()
-            .as_ref()
-            .clone();
+async fn get_list(State(db): State<DbPdfList>) -> Result<impl IntoResponse, StatusCode> {
+    let list = db.read().unwrap().deref().clone();
 
     Ok(Json(list))
 }
