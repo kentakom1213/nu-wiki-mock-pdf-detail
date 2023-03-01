@@ -9,7 +9,7 @@ pub struct PdfDetail {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PdfDetailData {
-    pub pdf_detail: Vec<PdfDetail>,
+    pub data: Vec<PdfDetail>,
 }
 
 /// ## read_json_file

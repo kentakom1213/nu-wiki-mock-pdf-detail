@@ -1,30 +1,30 @@
 pub const PDF_LIST_DATA: &str = r#"{
-    "pdf_list": [
+    "data": [
         {
             "file_id": 0,
-            "name": "微分積分学1",
+            "name": "微分積分学1"
         },
         {
             "file_id": 1,
-            "name": "線形代数学",
+            "name": "線形代数学"
         },
         {
             "file_id": 2,
-            "name": "システム数学及び演習1",
+            "name": "システム数学及び演習1"
         },
         {
             "file_id": 3,
-            "name": "シミュレーション",
+            "name": "シミュレーション"
         },
         {
             "file_id": 4,
-            "name": "物理基礎2",
+            "name": "物理基礎2"
         }
     ]
 }"#;
 
 pub const PDF_DETAIL_DATA: &str = r#"{
-    "pdf_detail": [
+    "data": [
         {
             "file_id": 0,
             "name": "微分積分学1",

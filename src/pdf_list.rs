@@ -6,9 +6,9 @@ pub struct PdfOverview {
     pub name: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct PdfList {
-    pub pdf_list: Vec<PdfOverview>,
+    pub data: Vec<PdfOverview>,
 }
 
 /// ## read_list_data

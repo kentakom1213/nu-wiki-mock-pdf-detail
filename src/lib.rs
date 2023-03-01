@@ -5,43 +5,54 @@ use axum::{
     routing::get,
     Json, Router,
 };
-use pdf_list::PdfList;
-use std::sync::{Arc, RwLock};
+use pdf_list::{PdfList, read_list_data};
+use std::{sync::{Arc, RwLock}};
 
 // データの読み込み
 mod data;
 use crate::data::{PDF_DETAIL_DATA, PDF_LIST_DATA};
 mod pdf_detail;
-use crate::pdf_detail::{read_detail_data, PdfDetail, PdfDetailData};
+use crate::pdf_detail::{read_detail_data, PdfDetail};
 mod pdf_list;
 
 // dbの定義
-type DbPdfList = Arc<RwLock<Vec<PdfList>>>;
+type DbPdfList = Arc<RwLock<Box<PdfList>>>;
 type DbPdfDetail = Arc<RwLock<Vec<PdfDetail>>>;
 
 #[shuttle_service::main]
 async fn axum() -> shuttle_service::ShuttleAxum {
-    // pdfの読み込み
-    let pdf_data = read_detail_data(PDF_DETAIL_DATA).unwrap();
+    // データの読み込み
+    let pdf_list = read_list_data(PDF_LIST_DATA).unwrap();
+    let pdf_detail = read_detail_data(PDF_DETAIL_DATA).unwrap();
 
     // データベースとなるベクタを作成
-    let db = make_db(&pdf_data);
+    let db_list = Arc::new( RwLock::new( Box::new( pdf_list ) ) );
+    let db_detail = Arc::new( RwLock::new( pdf_detail.data ) );
 
     // app
     let app = Router::new()
+        .route("/list", get(get_list))
+        .with_state(db_list)
         .route("/detail/:id", get(get_detail))
-        .with_state(db);
+        .with_state(db_detail);
 
     let sync_wrapper = sync_wrapper::SyncWrapper::new(app);
 
     Ok(sync_wrapper)
 }
 
-/// ## make_db
-/// Jsonからデータベースを作成
-fn make_db(data: &PdfDetailData) -> DbPdfDetail {
-    let map: Vec<PdfDetail> = data.pdf_detail.clone();
-    Arc::new(RwLock::new(map))
+/// ## get_list
+/// pdfの一覧を返す
+async fn get_list(
+    State(db): State<DbPdfList>
+) -> Result<impl IntoResponse, StatusCode> {
+    let list = db
+            .read()
+            .unwrap()
+            .as_ref()
+            .clone();
+
+    Ok(Json(list))
 }
 
 /// ## get_detail
