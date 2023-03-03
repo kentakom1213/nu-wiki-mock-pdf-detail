@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::{fs::OpenOptions, io::BufReader, path::PathBuf};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct PdfOverview {
@@ -13,9 +14,14 @@ pub struct PdfList {
 
 /// ## read_list_data
 /// jsonファイルを読み込む
-pub fn read_list_data(file: &str) -> std::io::Result<PdfList> {
-    // データのデシリアライズ
-    let pdf_list: PdfList = serde_json::from_str(file)?;
+pub fn read_list_data(file_path: PathBuf) -> std::io::Result<PdfList> {
+    // jsonファイルの読み込み
+    let data_json = OpenOptions::new().read(true).open(file_path)?;
 
-    Ok(pdf_list)
+    let reader = BufReader::new(&data_json);
+
+    // データのデシリアライズ
+    let pdf_data: PdfList = serde_json::from_reader(reader)?;
+
+    Ok(pdf_data)
 }
