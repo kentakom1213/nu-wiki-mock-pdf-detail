@@ -7,26 +7,33 @@ use axum::{
 };
 use std::{
     ops::Deref,
+    path::PathBuf,
     sync::{Arc, RwLock},
 };
 
 // データの読み込み
-mod data;
-use crate::data::{PDF_DETAIL_DATA, PDF_LIST_DATA};
 mod pdf_list;
 use pdf_list::{read_list_data, PdfOverview};
 mod pdf_detail;
 use crate::pdf_detail::{read_detail_data, PdfDetail};
+
+// ファイルパス
+const LIST_DATA_JSON: &str = "pdf_list.json";
+const DETAIL_DATA_JSON: &str = "pdf_detail.json";
 
 // dbの定義
 type DbPdfList = Arc<RwLock<Vec<PdfOverview>>>;
 type DbPdfDetail = Arc<RwLock<Vec<PdfDetail>>>;
 
 #[shuttle_service::main]
-async fn axum() -> shuttle_service::ShuttleAxum {
+async fn axum(
+    #[shuttle_static_folder::StaticFolder(folder = "static")] static_folder: PathBuf,
+) -> shuttle_service::ShuttleAxum {
     // データの読み込み
-    let pdf_list = read_list_data(PDF_LIST_DATA).unwrap();
-    let pdf_detail = read_detail_data(PDF_DETAIL_DATA).unwrap();
+    let pdf_list = read_list_data(static_folder.join(LIST_DATA_JSON))
+        .expect("Jsonデータが読み取れませんでした");
+    let pdf_detail = read_detail_data(static_folder.join(DETAIL_DATA_JSON))
+        .expect("Jsonデータが読み取れませんでした。");
 
     // データベースとなるベクタを作成
     let db_list = Arc::new(RwLock::new(pdf_list.data));
