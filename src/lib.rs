@@ -10,6 +10,7 @@ use std::{
     path::PathBuf,
     sync::{Arc, RwLock},
 };
+use tower_http::services::ServeFile;
 
 // データの読み込み
 mod pdf_list;
@@ -18,6 +19,7 @@ mod pdf_detail;
 use crate::pdf_detail::{read_detail_data, PdfDetail};
 
 // ファイルパス
+const INDEX_HTML: &str = "index.html";
 const LIST_DATA_JSON: &str = "pdf_list.json";
 const DETAIL_DATA_JSON: &str = "pdf_detail.json";
 
@@ -41,6 +43,7 @@ async fn axum(
 
     // app
     let app = Router::new()
+        .route_service("/", ServeFile::new(static_folder.join(INDEX_HTML)))
         .route("/list", get(get_list))
         .with_state(db_list)
         .route("/detail/:id", get(get_detail))
