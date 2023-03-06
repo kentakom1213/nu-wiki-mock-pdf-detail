@@ -8,7 +8,7 @@ use axum::{
 use std::{
     ops::Deref,
     path::PathBuf,
-    sync::{Arc, RwLock},
+    sync::{Arc, RwLock}, str::FromStr,
 };
 use tower_http::services::ServeFile;
 
@@ -19,6 +19,7 @@ mod pdf_detail;
 use crate::pdf_detail::{read_detail_data, PdfDetail};
 
 // ファイルパス
+const STATIC_DIR: &str = "static";
 const INDEX_HTML: &str = "index.html";
 const LIST_DATA_JSON: &str = "pdf_list.json";
 const DETAIL_DATA_JSON: &str = "pdf_detail.json";
@@ -28,9 +29,10 @@ type DbPdfList = Arc<RwLock<Vec<PdfOverview>>>;
 type DbPdfDetail = Arc<RwLock<Vec<PdfDetail>>>;
 
 #[shuttle_service::main]
-async fn axum(
-    #[shuttle_static_folder::StaticFolder(folder = "static")] static_folder: PathBuf,
-) -> shuttle_service::ShuttleAxum {
+async fn axum() -> shuttle_service::ShuttleAxum {
+    // `/static`の定義
+    let static_folder = PathBuf::from_str(STATIC_DIR).unwrap();
+
     // データの読み込み
     let pdf_list = read_list_data(static_folder.join(LIST_DATA_JSON))
         .expect("Jsonデータが読み取れませんでした");
