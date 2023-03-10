@@ -56,14 +56,14 @@ async fn axum(
 
 /// ## get_list
 /// pdfの一覧を返す
-async fn get_list(State(db): State<DbPdfList>) -> Result<impl IntoResponse, StatusCode> {
+async fn get_list(State(db): State<DbPdfList>) -> Json<Vec<PdfOverview>> {
     let list = db
         .read()
         .unwrap()
         .deref()
         .clone();
 
-    Ok(Json(list))
+    Json(list)
 }
 
 /// ## get_detail
