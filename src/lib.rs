@@ -27,10 +27,10 @@ const DETAIL_DATA_JSON: &str = "pdf_detail.json";
 type DbPdfList = Arc<RwLock<Vec<PdfOverview>>>;
 type DbPdfDetail = Arc<RwLock<Vec<PdfDetail>>>;
 
-#[shuttle_service::main]
+#[shuttle_runtime::main]
 async fn axum(
     #[shuttle_static_folder::StaticFolder(folder = "static")] static_folder: PathBuf,
-) -> shuttle_service::ShuttleAxum {
+) -> shuttle_axum::ShuttleAxum {
     // データの読み込み
     let pdf_list = read_list_data(static_folder.join(LIST_DATA_JSON))
         .expect("Jsonデータが読み取れませんでした");
@@ -49,9 +49,7 @@ async fn axum(
         .route("/detail/:id", get(get_detail))
         .with_state(db_detail);
 
-    let sync_wrapper = sync_wrapper::SyncWrapper::new(app);
-
-    Ok(sync_wrapper)
+    Ok(app.into())
 }
 
 /// ## get_list
