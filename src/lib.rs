@@ -55,11 +55,7 @@ async fn axum(
 /// ## get_list
 /// pdfの一覧を返す
 async fn get_list(State(db): State<DbPdfList>) -> Json<Vec<PdfOverview>> {
-    let list = db
-        .read()
-        .unwrap()
-        .deref()
-        .clone();
+    let list = db.read().unwrap().deref().clone();
 
     Json(list)
 }
